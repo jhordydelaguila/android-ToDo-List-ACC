@@ -54,7 +54,7 @@ public class AddTaskActivity extends AppCompatActivity {
         if (intent != null && intent.hasExtra(EXTRA_TASK_ID)) {
             mButton.setText(R.string.update_button);
             if (mTaskId == DEFAULT_TASK_ID) {
-                int mTaskId = intent.getIntExtra(EXTRA_TASK_ID,DEFAULT_TASK_ID);
+                mTaskId = intent.getIntExtra(EXTRA_TASK_ID, DEFAULT_TASK_ID);
 
                 AddTaskViewModelFactory factory = new AddTaskViewModelFactory(mDb, mTaskId);
                 final AddTaskViewModel viewModel = ViewModelProviders.of(this, factory).get(AddTaskViewModel.class);
@@ -102,11 +102,16 @@ public class AddTaskActivity extends AppCompatActivity {
         int priority = getPriorityFromViews();
         Date date = new Date();
 
-        final TaskEntry taskEntry = new TaskEntry(description, priority, date);
+        final TaskEntry task = new TaskEntry(description, priority, date);
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                mDb.taskDao().insertTask(taskEntry);
+                if (mTaskId == DEFAULT_TASK_ID) {
+                    mDb.taskDao().insertTask(task);
+                } else {
+                    task.setId(mTaskId);
+                    mDb.taskDao().updateTask(task);
+                }
                 finish();
             }
         });

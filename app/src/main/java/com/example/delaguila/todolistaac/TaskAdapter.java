@@ -1,7 +1,9 @@
 package com.example.delaguila.todolistaac;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,26 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.taskDescriptionView.setText(description);
         holder.updatedAtView.setText(updatedAt);
         holder.priorityView.setText(String.valueOf(priority));
+
+        GradientDrawable priorityCircle = (GradientDrawable) holder.priorityView.getBackground();
+        int priorityColor = getPriorityColor(priority);
+        priorityCircle.setColor(priorityColor);
+    }
+
+    private int getPriorityColor(int priority) {
+        int priorityColor = 0;
+        switch (priority) {
+            case 1:
+                priorityColor = ContextCompat.getColor(mContext, R.color.materialRed);
+                break;
+            case 2:
+                priorityColor = ContextCompat.getColor(mContext, R.color.materialOrange);
+                break;
+            case 3:
+                priorityColor = ContextCompat.getColor(mContext, R.color.materialYellow);
+                break;
+        }
+        return priorityColor;
     }
 
     @Override

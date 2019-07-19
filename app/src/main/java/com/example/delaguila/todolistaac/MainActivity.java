@@ -3,6 +3,7 @@ package com.example.delaguila.todolistaac;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +11,11 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 
+import com.example.delaguila.todolistaac.database.AppDatabase;
 import com.example.delaguila.todolistaac.database.TaskEntry;
 
 import java.util.List;
@@ -24,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
+    private AppDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,25 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(decoration);
 
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int i) {
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        int position = viewHolder.getAdapterPosition();
+                        List<TaskEntry> task = mAdapter.getmTasks();
+                        mDb.taskDao().deleteTask(task.get(position));
+                    }
+                });
+            }
+        }).attachToRecyclerView(mRecyclerView);
+
         FloatingActionButton faButton = findViewById(R.id.fab);
         faButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             }
         });
 
+        mDb = AppDatabase.getInstance(getApplicationContext());
         setupViewModel();
     }
 
@@ -68,4 +92,5 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         intent.putExtra(AddTaskActivity.EXTRA_TASK_ID, itemId);
         startActivity(intent);
     }
+
 }

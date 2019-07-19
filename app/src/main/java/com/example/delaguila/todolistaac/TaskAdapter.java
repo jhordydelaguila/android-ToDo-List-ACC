@@ -80,6 +80,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return mTaskEntries == null ? 0 : mTaskEntries.size();
     }
 
+    public List<TaskEntry> getmTasks() {
+        return mTaskEntries;
+    }
+
     public void setTasks(List<TaskEntry> taskEntries) {
         mTaskEntries = taskEntries;
         notifyDataSetChanged();

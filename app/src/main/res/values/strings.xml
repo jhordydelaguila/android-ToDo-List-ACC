@@ -7,4 +7,6 @@
     <string name="edit_task_description">Describe your taskEntry&#8230;</string>
     <string name="priority_string">Priority</string>
 
+    <string name="update_button">Update</string>
+
 </resources>

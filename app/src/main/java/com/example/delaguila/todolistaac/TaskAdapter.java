@@ -24,8 +24,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     private Context mContext;
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
 
-    public TaskAdapter(Context mContext) {
-        this.mContext = mContext;
+    private ItemClickListener mItemClickListener;
+
+    public interface ItemClickListener {
+        void onItemClickListener(int itemId);
+    }
+
+    public TaskAdapter(Context context, ItemClickListener listener) {
+        mContext = context;
+        mItemClickListener = listener;
     }
 
     @NonNull
@@ -78,7 +85,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         notifyDataSetChanged();
     }
 
-    class TaskViewHolder extends RecyclerView.ViewHolder {
+    class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView taskDescriptionView;
         TextView updatedAtView;
         TextView priorityView;
@@ -89,8 +96,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             taskDescriptionView = itemView.findViewById(R.id.taskDescription);
             updatedAtView = itemView.findViewById(R.id.taskUpdatedAt);
             priorityView = itemView.findViewById(R.id.priorityTextView);
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+            int elementId = mTaskEntries.get(getAdapterPosition()).getId();
+            mItemClickListener.onItemClickListener(elementId);
+        }
     }
 
 }

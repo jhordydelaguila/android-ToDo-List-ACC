@@ -17,7 +17,7 @@ import com.example.delaguila.todolistaac.database.TaskEntry;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener {
 
     // Constant for logging
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.recycleViewTasks);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mAdapter = new TaskAdapter(this);
+        mAdapter = new TaskAdapter(this, this);
         mRecyclerView.setAdapter(mAdapter);
 
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL);
@@ -62,4 +62,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onItemClickListener(int itemId) {
+        Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
+        intent.putExtra(AddTaskActivity.EXTRA_TASK_ID, itemId);
+        startActivity(intent);
+    }
 }
